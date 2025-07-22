@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region to deploy to"
+      }
+    },
+    "resourceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure OpenAI resource"
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "S0",
+      "allowedValues": [ "S0" ],
+      "metadata": {
+        "description": "SKU for Azure OpenAI"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('resourceName')]",
+      "location": "[parameters('location')]",
+      "kind": "OpenAI",
+      "sku": {
+        "name": "[parameters('skuName')]"
+      },
+      "properties": {
+        "apiProperties": {
+          "qnaRuntimeEndpoint": "",
+          "qnaAuthoringEndpoint": ""
+        },
+        "customSubDomainName": "[parameters('resourceName')]"
+      }
+    }
+  ],
+  "outputs": {
+    "openAiEndpoint": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('resourceName'))).endpoint]"
+    }
+  }
+}
