@@ -13,7 +13,7 @@
     }
   },
   "variables": {
-    "openAiName": "aiwia-openai",
+    "openAiName": "aiwia-openai-i",
     "appServicePrincipalId": "1f51fc21-eb6a-438a-a4cd-f44a1dedccd3",
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a232010e-820c-4083-83bb-3ace5fc29d0b')]",
     "openAiResourceId": "[resourceId(parameters('resourceGroupName'), 'Microsoft.CognitiveServices/accounts', variables('openAiName'))]"
