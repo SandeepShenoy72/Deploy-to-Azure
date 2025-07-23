@@ -6,7 +6,7 @@
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "Azure region to deploy to"
+        "description": "Azure region to deploy the OpenAI resource"
       }
     },
     "resourceName": {
@@ -19,9 +19,34 @@
     "skuName": {
       "type": "string",
       "defaultValue": "S0",
-      "allowedValues": [ "S0" ],
+      "allowedValues": ["S0"],
       "metadata": {
         "description": "SKU for Azure OpenAI"
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "OpenAI",
+      "allowedValues": ["OpenAI"],
+      "metadata": {
+        "description": "Cognitive Services kind (OpenAI)"
+      }
+    },
+    "customSubDomainName": {
+      "type": "string",
+      "defaultValue": "myopenaidomain",
+      "metadata": {
+        "description": "Custom subdomain name for the OpenAI endpoint"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "environment": "dev",
+        "owner": "team-name"
+      },
+      "metadata": {
+        "description": "Resource tags for tracking and cost management"
       }
     }
   },
@@ -31,17 +56,32 @@
       "apiVersion": "2023-05-01",
       "name": "[parameters('resourceName')]",
       "location": "[parameters('location')]",
-      "kind": "OpenAI",
+      "kind": "[parameters('kind')]",
       "sku": {
         "name": "[parameters('skuName')]"
       },
+      "tags": "[parameters('tags')]",
       "properties": {
         "apiProperties": {
           "qnaRuntimeEndpoint": "",
           "qnaAuthoringEndpoint": ""
         },
-        "customSubDomainName": "[parameters('resourceName')]"
+        "customSubDomainName": "[parameters('customSubDomainName')]"
       }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(resourceId('Microsoft.CognitiveServices/accounts', parameters('resourceName')), '1f51fc21-eb6a-438a-a4cd-f44a1dedccd3', 'cogsvc-user')]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+        "principalId": "1f51fc21-eb6a-438a-a4cd-f44a1dedccd3",
+        "principalType": "ServicePrincipal",
+        "scope": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('resourceName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('resourceName'))]"
+      ]
     }
   ],
   "outputs": {
