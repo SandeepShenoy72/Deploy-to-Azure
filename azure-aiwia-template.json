@@ -11,6 +11,7 @@
     },
     "resourceName": {
       "type": "string",
+      "defaultValue": "my-openai-resource",
       "metadata": {
         "description": "Name of the Azure OpenAI resource"
       }
